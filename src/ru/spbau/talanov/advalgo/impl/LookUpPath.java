@@ -1,6 +1,7 @@
 package ru.spbau.talanov.advalgo.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +104,6 @@ public final class LookUpPath<E extends Comparable<? super E>> {
         return new LookUpPath<E>(root, desiredValue);
     }
 
-
     /*mutates inner state*/
     public void popLast(int count) {
         result = path.get(length - count);
@@ -112,5 +112,23 @@ public final class LookUpPath<E extends Comparable<? super E>> {
             turns.remove(length - i);
         }
         length -= 2;
+    }
+
+    @Nullable
+    public Node<E> getHigher() {
+        int lastTurnLeft = turns.lastIndexOf(Direction.LEFT);
+        if (lastTurnLeft == -1) {
+            return null;
+        }
+        return path.get(lastTurnLeft);
+    }
+
+    @Nullable
+    public Node<E> getLower() {
+        int lastTurnRight = turns.lastIndexOf(Direction.RIGHT);
+        if (lastTurnRight == -1) {
+            return null;
+        }
+        return path.get(lastTurnRight);
     }
 }

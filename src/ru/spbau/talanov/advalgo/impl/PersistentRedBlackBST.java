@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.spbau.talanov.advalgo.impl.Direction.LEFT;
+import static ru.spbau.talanov.advalgo.impl.Direction.RIGHT;
 import static ru.spbau.talanov.advalgo.impl.RBTreeNode.builder;
 
 /**
@@ -137,32 +139,78 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
     }
 
     @Override
-    public PersistentRedBlackBST<E> remove(E element) {
+    public PersistentRedBlackBST<E> remove(@NotNull E element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public E ceiling(E element) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    public E ceiling(@NotNull E element) {
+        LookUpPath<E> lookUpPath = LookUpPath.performLookUp(root, element);
+        if (!lookUpPath.getResult().isNil()) {
+            return lookUpPath.getResult().getValue();
+        }
+        Node<E> higherAncestor = lookUpPath.getHigher();
+        if (higherAncestor == null) {
+            return null;
+        }
+        return higherAncestor.getValue();
     }
 
     @Override
-    public E floor(E element) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    public E floor(@NotNull E element) {
+        LookUpPath<E> lookUpPath = LookUpPath.performLookUp(root, element);
+        if (!lookUpPath.getResult().isNil()) {
+            return lookUpPath.getResult().getValue();
+        }
+        Node<E> lowerAncestor = lookUpPath.getLower();
+        if (lowerAncestor == null) {
+            return null;
+        }
+        return lowerAncestor.getValue();
     }
 
     @Override
-    public E higher(E element) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    public E higher(@NotNull E element) {
+        LookUpPath<E> lookUpPath = LookUpPath.performLookUp(root, element);
+        Node<E> higherAncestor = lookUpPath.getHigher();
+        Node<E> leastInRightSubTree = findFurtherestChildInDirection(lookUpPath.getResult().getRight(), LEFT);
+        if (leastInRightSubTree.isNil()) {
+            return higherAncestor != null ? higherAncestor.getValue() : null;
+        }
+        if (higherAncestor == null) {
+            return leastInRightSubTree.isNil() ? null : leastInRightSubTree.getValue();
+        }
+        return higherAncestor.getValue().compareTo(leastInRightSubTree.getValue()) < 0 ? higherAncestor.getValue() : leastInRightSubTree.getValue();
     }
 
     @Override
-    public E lower(E element) {
-        throw new UnsupportedOperationException();
+    public E lower(@NotNull E element) {
+        LookUpPath<E> lookUpPath = LookUpPath.performLookUp(root, element);
+        Node<E> lowerAncestor = lookUpPath.getLower();
+        Node<E> greatestInLeftSubTree = findFurtherestChildInDirection(lookUpPath.getResult().getLeft(), RIGHT);
+        if (greatestInLeftSubTree.isNil()) {
+            return lowerAncestor != null ? lowerAncestor.getValue() : null;
+        }
+        if (lowerAncestor == null) {
+            return greatestInLeftSubTree.isNil() ? null : greatestInLeftSubTree.getValue();
+        }
+        return lowerAncestor.getValue().compareTo(greatestInLeftSubTree.getValue()) < 0 ? greatestInLeftSubTree.getValue() : lowerAncestor.getValue();
+    }
+
+    @NotNull
+    private Node<E> findFurtherestChildInDirection(@NotNull Node<E> node, @NotNull Direction direction) {
+        Node<E> current = node;
+        while (!current.getChild(direction).isNil()) {
+            current = current.getChild(direction);
+        }
+        return current;
     }
 
     @Override
-    public boolean contains(E element) {
+    public boolean contains(@NotNull E element) {
         LookUpPath<E> lookUpPath = LookUpPath.performLookUp(root, element);
         return !lookUpPath.getResult().isNil();
     }

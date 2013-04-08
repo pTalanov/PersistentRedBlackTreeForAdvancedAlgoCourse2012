@@ -128,13 +128,17 @@ public class PersistentRedBlackBSTTest {
         doTestRandomInsertions(10000);
     }
 
+    //TODO: fix random tests
     private void doTestRandomInsertions(int numberOfInsertions) {
         List<Integer> expected = new ArrayList<Integer>();
         Random random = new Random();
         PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty();
         for (int i = 0; i < numberOfInsertions; ++i) {
             int randomInt = random.nextInt();
-            tree = tree.add(randomInt);
+            PersistentRedBlackBST<Integer> newTree = tree.add(randomInt);
+            if (newTree != null) {
+                tree = newTree;
+            }
             expected.add(randomInt);
         }
         Collections.sort(expected);
@@ -151,23 +155,101 @@ public class PersistentRedBlackBSTTest {
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     @org.junit.Test
     public void testCeiling() throws Exception {
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        Assert.assertEquals((Object) 0, tree.ceiling(-1000));
+        Assert.assertEquals((Object) 0, tree.ceiling(-1));
+        Assert.assertEquals((Object) 0, tree.ceiling(0));
+        Assert.assertEquals((Object) 2, tree.ceiling(1));
+        Assert.assertEquals((Object) 2, tree.ceiling(2));
+        Assert.assertEquals((Object) 10, tree.ceiling(3));
+        Assert.assertEquals((Object) 20, tree.ceiling(11));
+        Assert.assertEquals((Object) 22, tree.ceiling(21));
+        Assert.assertEquals((Object) 22, tree.ceiling(22));
+        Assert.assertEquals((Object) 23, tree.ceiling(23));
+        Assert.assertEquals(null, tree.ceiling(24));
+        Assert.assertEquals(null, tree.ceiling(100));
+        Assert.assertEquals(null, tree.ceiling(1000));
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     @org.junit.Test
     public void testFloor() throws Exception {
-
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        Assert.assertEquals(null, tree.floor(-1000));
+        Assert.assertEquals(null, tree.floor(-1));
+        Assert.assertEquals((Object) 0, tree.floor(0));
+        Assert.assertEquals((Object) 0, tree.floor(1));
+        Assert.assertEquals((Object) 2, tree.floor(2));
+        Assert.assertEquals((Object) 2, tree.floor(3));
+        Assert.assertEquals((Object) 10, tree.floor(11));
+        Assert.assertEquals((Object) 20, tree.floor(21));
+        Assert.assertEquals((Object) 22, tree.floor(22));
+        Assert.assertEquals((Object) 23, tree.floor(23));
+        Assert.assertEquals((Object) 23, tree.floor(24));
+        Assert.assertEquals((Object) 23, tree.floor(100));
     }
 
     @org.junit.Test
     public void testHigher() throws Exception {
-
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        Assert.assertEquals((Object) 0, tree.higher(-1000));
+        Assert.assertEquals((Object) 0, tree.higher(-1));
+        Assert.assertEquals((Object) 2, tree.higher(0));
+        Assert.assertEquals((Object) 2, tree.higher(1));
+        Assert.assertEquals((Object) 10, tree.higher(2));
+        Assert.assertEquals((Object) 10, tree.higher(3));
+        Assert.assertEquals((Object) 20, tree.higher(11));
+        Assert.assertEquals((Object) 22, tree.higher(21));
+        Assert.assertEquals((Object) 23, tree.higher(22));
+        Assert.assertEquals(null, tree.higher(23));
+        Assert.assertEquals(null, tree.higher(24));
+        Assert.assertEquals(null, tree.higher(100));
+        Assert.assertEquals(null, tree.higher(1000));
     }
 
     @org.junit.Test
     public void testLower() throws Exception {
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        Assert.assertEquals(null, tree.lower(-1000));
+        Assert.assertEquals(null, tree.lower(-1));
+        Assert.assertEquals(null, tree.lower(0));
+        Assert.assertEquals((Object) 0, tree.lower(1));
+        Assert.assertEquals((Object) 0, tree.lower(2));
+        Assert.assertEquals((Object) 2, tree.lower(3));
+        Assert.assertEquals((Object) 2, tree.lower(10));
+        Assert.assertEquals((Object) 10, tree.lower(11));
+        Assert.assertEquals((Object) 20, tree.lower(21));
+        Assert.assertEquals((Object) 20, tree.lower(22));
+        Assert.assertEquals((Object) 22, tree.lower(23));
+        Assert.assertEquals((Object) 23, tree.lower(24));
+        Assert.assertEquals((Object) 23, tree.lower(100));
+    }
 
+    @Test
+    public void testOrderingMethods() throws Exception {
+        TreeSet<Integer> expected = new TreeSet<Integer>();
+        Random random = new Random(3);
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty();
+        int numberOfInsertions = 1000;
+        for (int i = 0; i < numberOfInsertions; ++i) {
+            int randomInt = random.nextInt(numberOfInsertions * 10);
+            PersistentRedBlackBST<Integer> newTree = tree.add(randomInt);
+            if (newTree != null) {
+                tree = newTree;
+            }
+            expected.add(randomInt);
+        }
+        int numberOfQueries = 1000000;
+        for (int i = 0; i < numberOfQueries; ++i) {
+            int randomInt = random.nextInt(numberOfInsertions * 11);
+            Assert.assertEquals(expected.floor(randomInt), tree.floor(randomInt));
+            Assert.assertEquals(expected.ceiling(randomInt), tree.ceiling(randomInt));
+            Assert.assertEquals(expected.lower(randomInt), tree.lower(randomInt));
+            Assert.assertEquals(expected.higher(randomInt), tree.higher(randomInt));
+        }
     }
 }
