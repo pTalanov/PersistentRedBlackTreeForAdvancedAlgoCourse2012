@@ -59,15 +59,15 @@ public final class RBTreeNode<E> extends Node<E> {
         private E value = null;
         @Nullable
         private Color color = null;
+        @Nullable
+        private Mutator<E> mutator;
 
-        private Builder(Node<E> existing) {
+        private Builder(@NotNull Node<E> existing, @Nullable Mutator<E> mutator) {
+            this.mutator = mutator;
             this.left = existing.getLeft();
             this.right = existing.getRight();
             this.value = existing.getValue();
             this.color = existing.getColor();
-        }
-
-        private Builder() {
         }
 
         @NotNull
@@ -79,6 +79,18 @@ public final class RBTreeNode<E> extends Node<E> {
         @NotNull
         public Builder<E> right(@NotNull Node<E> right) {
             this.right = right;
+            return this;
+        }
+
+        @NotNull
+        public Builder<E> value(@NotNull E value) {
+            this.value = value;
+            return this;
+        }
+
+        @NotNull
+        public Builder<E> color(@NotNull Color color) {
+            this.color = color;
             return this;
         }
 
@@ -104,7 +116,11 @@ public final class RBTreeNode<E> extends Node<E> {
             assert right != null;
             assert value != null;
             assert color != null;
-            return new RBTreeNode<E>(left, right, value, color);
+            Node<E> result = new RBTreeNode<E>(left, right, value, color);
+            if (mutator != null) {
+                result = mutator.mutate(result);
+            }
+            return result;
         }
     }
 
@@ -113,12 +129,12 @@ public final class RBTreeNode<E> extends Node<E> {
         return value.toString() + ":" + color.toString() + "(" + left.toString() + "), (" + right.toString() + ")";
     }
 
-    public static <E> Builder<E> builder() {
-        return new Builder<E>();
+    public static <E> Builder<E> builder(@NotNull Node<E> node) {
+        return builder(node, null);
     }
 
-    public static <E> Builder<E> builder(Node<E> node) {
-        return new Builder<E>(node);
+    public static <E> Builder<E> builder(@NotNull Node<E> node, @Nullable Mutator<E> mutator) {
+        return new Builder<E>(node, mutator);
     }
 
     public static <E> Node<E> leafNode(@NotNull E value, @NotNull Color color) {

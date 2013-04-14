@@ -28,7 +28,7 @@ public final class LookUpPath<E extends Comparable<? super E>> {
             int comparisonResult = desiredValue.compareTo(currentValue);
             if (comparisonResult == 0) {
                 result = currentNode;
-                return;
+                break;
             }
             path.add(currentNode);
             if (comparisonResult < 0) {
@@ -43,11 +43,11 @@ public final class LookUpPath<E extends Comparable<? super E>> {
         assert length == path.size();
     }
 
-
     @NotNull
     public Node<E> getResult() {
         return result;
     }
+
 
     @NotNull
     public Node<E> getFather() {
@@ -68,39 +68,27 @@ public final class LookUpPath<E extends Comparable<? super E>> {
     }
 
     @NotNull
+    public Direction getDirectionFromFatherToSibling() {
+        return getDirectionFromFather().opposite();
+    }
+
+    @NotNull
     public Direction getDirectionFromGrandFather() {
         return turns.get(length - 2);
     }
 
     @NotNull
     public Node<E> getUncle() {
-        return getGrandFather().getChild(turns.get(length - 2).opposite());
-    }
-
-    public <D> D traversePathFromBottomToTop(D initialData, TraverseCallback<E, D> callback) {
-        assert !path.isEmpty();
-        Node<E> current = getResult();
-        int height = path.size() - 1;
-        D currentData = initialData;
-        while (height >= 0) {
-            currentData = callback.traverse(current, path.get(height), turns.get(height), currentData);
-            current = path.get(height);
-            height--;
-        }
-        return currentData;
+        return getGrandFather().getChild(getDirectionFromGrandFather().opposite());
     }
 
     public boolean isRoot() {
         return length == 0;
     }
 
-    public interface TraverseCallback<E, D> {
-        D traverse(Node<E> current, Node<E> parent, Direction d, D data);
-    }
-
-
     @NotNull
-    public static <E extends Comparable<? super E>> LookUpPath<E> performLookUp(@NotNull Node<E> root, @NotNull E desiredValue) {
+    public static <E extends Comparable<? super E>> LookUpPath<E> performLookUp(@NotNull Node<E> root,
+                                                                                @NotNull E desiredValue) {
         return new LookUpPath<E>(root, desiredValue);
     }
 
@@ -111,7 +99,47 @@ public final class LookUpPath<E extends Comparable<? super E>> {
             path.remove(length - i);
             turns.remove(length - i);
         }
-        length -= 2;
+        length -= count;
+    }
+
+
+    @NotNull
+    private static final Node DUMMY_NODE = new Node() {
+        @NotNull
+        @Override
+        public Color getColor() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Node getLeft() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Node getRight() {
+            throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Object getValue() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isNil() {
+            throw new UnsupportedOperationException();
+        }
+    };
+
+    public void insertDummy(@NotNull Direction direction) {
+        turns.add(direction);
+        //noinspection unchecked
+        path.add(DUMMY_NODE);
+        length += 1;
     }
 
     @Nullable
@@ -131,4 +159,41 @@ public final class LookUpPath<E extends Comparable<? super E>> {
         }
         return path.get(lastTurnRight);
     }
+
+    @NotNull
+    public static <E extends Comparable<? super E>> Node<E> replaceNode(@NotNull LookUpPath<E> lookUpPath,
+                                                                        @NotNull Node<E> toReplaceWith) {
+        return replaceNode(lookUpPath, toReplaceWith, new Mutator<E>() {
+            @NotNull
+            @Override
+            public Node<E> mutate(@NotNull Node<E> node) {
+                return node;
+            }
+        });
+    }
+
+    @NotNull
+    public static <E extends Comparable<? super E>> Node<E> replaceNode(@NotNull LookUpPath<E> lookUpPath,
+                                                                        @NotNull Node<E> toReplaceWith,
+                                                                        @Nullable Mutator<E> mutator) {
+        if (mutator == null) {
+            return replaceNode(lookUpPath, toReplaceWith);
+        }
+        if (lookUpPath.isRoot()) {
+            return mutator.mutate(toReplaceWith);
+        }
+        assert !lookUpPath.path.isEmpty();
+        int height = lookUpPath.path.size() - 1;
+        Node<E> currentNode = mutator.mutate(toReplaceWith);
+        while (height >= 0) {
+            Node<E> parent = lookUpPath.path.get(height);
+            Direction direction = lookUpPath.turns.get(height);
+            Node<E> newChild = currentNode;
+            currentNode = RBTreeNode.builder(parent).child(direction, newChild).build();
+            currentNode = mutator.mutate(currentNode);
+            height--;
+        }
+        return currentNode;
+    }
+
 }

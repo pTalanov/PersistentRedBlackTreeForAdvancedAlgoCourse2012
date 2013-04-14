@@ -8,6 +8,7 @@ import java.util.*;
 /**
  * @author Pavel Talanov
  */
+//TODO: test for return null
 public class PersistentRedBlackBSTTest {
     @org.junit.Test
     public void testEmpty() throws Exception {
@@ -128,9 +129,8 @@ public class PersistentRedBlackBSTTest {
         doTestRandomInsertions(10000);
     }
 
-    //TODO: fix random tests
     private void doTestRandomInsertions(int numberOfInsertions) {
-        List<Integer> expected = new ArrayList<Integer>();
+        Set<Integer> expected = new HashSet<Integer>();
         Random random = new Random();
         PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty();
         for (int i = 0; i < numberOfInsertions; ++i) {
@@ -141,17 +141,134 @@ public class PersistentRedBlackBSTTest {
             }
             expected.add(randomInt);
         }
-        Collections.sort(expected);
-        Assert.assertEquals(expected, tree.toList());
+        Assert.assertEquals(expected, tree.toSet());
+    }
+
+    @Test
+    public void testDeleteSimpleCases() throws Exception {
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(1).add(2);
+        PersistentRedBlackBST<Integer> onlyOne = tree.remove(2);
+        Assert.assertNotNull(onlyOne);
+        Assert.assertTrue(onlyOne.contains(1));
+        Assert.assertFalse(onlyOne.contains(0));
+        Assert.assertFalse(onlyOne.contains(2));
+        PersistentRedBlackBST<Integer> onlyTwo = tree.remove(1);
+        Assert.assertNotNull(onlyTwo);
+        Assert.assertTrue(onlyTwo.contains(2));
+        Assert.assertFalse(onlyTwo.contains(0));
+        Assert.assertFalse(onlyTwo.contains(1));
     }
 
     @org.junit.Test
-    public void testAdd() throws Exception {
+    public void testDeleteCase1() throws Exception {
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(1);
+        PersistentRedBlackBST<Integer> shouldBeEmpty = tree.remove(1);
+        Assert.assertNotNull(shouldBeEmpty);
+        Assert.assertFalse(shouldBeEmpty.contains(1));
+        Assert.assertFalse(shouldBeEmpty.contains(0));
+        Assert.assertFalse(shouldBeEmpty.contains(2));
+    }
+
+    @org.junit.Test
+    public void testDeleteCase3() throws Exception {
+        testDeletion(5, 0, -5, 10, 15, 5);
+    }
+
+    @org.junit.Test
+    public void testDeleteCase6() throws Exception {
+        testDeletion(5, 0, -5, 10, 15, 5, 20);
+    }
+
+    @org.junit.Test
+    public void testDeleteNodeWithTwoChildren() throws Exception {
+        testDeletion(15, 0, -5, 10, 15, 5, 20, 12, 17, 19, -2, -10);
+    }
+
+    @org.junit.Test
+    public void testDeleteX() throws Exception {
 
     }
 
     @org.junit.Test
-    public void testRemove() throws Exception {
+    public void testDeleteCase4() throws Exception {
+        testDeletion(636441461, 60083851, -1047246899, 636441461, -2074950722, 1896014206, -1413188214, -1538700081,
+                1756257240, 1381649283, 2090978777, 684089275, 1179872673, -177120708, -4722706, 1561871408, -1627662005,
+                -41175605, -1505798483, -1559508775, -1892390909, -1016839801, -1994146485, -1361247003, -261457104,
+                -1423453203, 1928964661, 565990170, 1804528636, -296814124, -2096675792, -1723897296, -309797102,
+                -1955317532, -1507666495, -396679588, -2128899927, 237471048, 1097573070, 53991466, -91333439, 865525410,
+                336065669, -1980027761, -1063876691, -772847553, -1034059908, 482345534, -1208579376, 114856075, 1290242072);
+    }
+
+    @Test
+    public void testDeleteCase2() throws Exception {
+        testDeletion(1679278649, 1259824289, -149733910, 89436858, -613132576, -1359586503, -36776185, 773028180,
+                -1417582576, 1807685345, -1789689117, -1071993015, 2033400247, 1679278649, -116515626, -1820092867,
+                -734877522, 591411417, 1383018530, 1968347373, 639824947, -1707140770, -976641413, 1495825759, 1847514640,
+                -788175674, -1726807352, 882378330, 36468987, 1348222717, -913080277, 45070360, 1167061312, 1251321015,
+                -1712337602, -1693535175, 1463425949, -1355666816, 1473737632, -237575941, 386664044, 507189521, -465151057,
+                473812904, 1367689479, 1815182052, -2098164586, -341764529, -638194329, 1013444361, 2036033673);
+    }
+
+    @Test
+    public void testDeleteCase5() throws Exception {
+        testDeletion(-126517511, -577670, -1769283912, 1649844156, -1193618445,
+                1785435749, 1191997515, 136489090, -341283291, 1033859583, 474774531, -126517511, -233647992, -2139525898,
+                537033717, -1181782513, -1671734779, 1234897040, 119214728, 399292322, -1352911824, 2023458287, 1078380,
+                -1251219095, 1181700177, -1825464425, -670368309, -1016456171, -685792833, 796972845, 1515808447);
+    }
+
+    private void testDeletion(Integer valueToDelete, Integer... initialValues) {
+        List<Integer> values = Arrays.asList(initialValues);
+        Assert.assertTrue(values.contains(valueToDelete));
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.of(values);
+        PersistentRedBlackBST<Integer> modified = tree.remove(valueToDelete);
+        Assert.assertNotNull(modified);
+        List<Integer> valuesWithoutElement = new ArrayList<Integer>(values);
+        valuesWithoutElement.remove(valueToDelete);
+        for (Integer value : valuesWithoutElement) {
+            Assert.assertTrue(value + "\n" + valueToDelete + " " + values, modified.contains(value));
+        }
+        Assert.assertFalse(modified.contains(valueToDelete));
+    }
+
+    @Test
+    public void testRandomDeletion() throws Exception {
+        testRandomDeletionOfSize(50);
+        testRandomDeletionOfSize(150);
+        testRandomDeletionOfSize(350);
+    }
+
+    private void testRandomDeletionOfSize(int collectionSize) {
+        Set<Integer> values = new HashSet<Integer>();
+        Random random = new Random();
+        for (int i = 0; i < collectionSize; ++i) {
+            values.add(random.nextInt(collectionSize * 15));
+        }
+        for (Integer value : values) {
+            testDeletion(value, values.toArray(new Integer[]{values.size()}));
+        }
+    }
+
+    @Test
+    public void testDeletionSpecialCase1() throws Exception {
+        testDeletion(-1565869671, -270891837, -1311255625, 1346889785, 1855759912, 423164483, -131478385, 1958421467,
+                627724950, 80416323, -315790821, -1270897959, 1518993084, -604233991, 897004427, -1436607928, -1343122817,
+                -1349550357, 985287142, -1680428407, -314671255, -1101337518, 2016952992, 1596831719, -1163834494, -1149779784,
+                -531405737, -1024854744, -1363715315, 487161218, 1467678056, -393101515, -814397052, -755499650, -1810364469,
+                -2076885779, -1472358672, -2088032186, 826418436, 1428035454, -1469296289, -1008663771, -1772424181, -1537427070,
+                -1653481648, -1203210790, -505080690, -1817732333, -1197331015, 752324734, -653091782, 300166285, 241165453, 1606930187,
+                -2006819398, 1825617787, 2167468, -1046021138, -35016422, -296260001, 722253476, 1860023190, -2081227342, -24971925, 1254325696,
+                1530375042, -1154786012, 1923127965, 1633964393, -39468965, 383774916, 1827389790, 1592128162, 485946834, 726869788, 569938906, 257826911,
+                -1910438313, 1083817050, -1923554027, -1565869671, -673659317, 149947135, 1886171969, -655793056, -636185378, 1756923773, 1731068613, -1965986710,
+                1102248992, -1662709322, -356870076, 2012112266, -1337093645, 1672041340, -302715426, 1835784200, -210939811, 208623642, -422321483, 909739689);
+
+    }
+
+    @Test
+    public void testDeletionSpecialCase2() throws Exception {
+        testDeletion(31, 551, 3, 401, 407, 286, 152, 154, 256, 563, 698, 158, 159, 261, 386, 572, 691, 31, 568, 446, 172,
+                43, 315, 46, 641, 521, 49, 290, 54, 431, 663, 205, 610, 342, 204, 70, 340, 748, 470, 78, 469, 625, 624,
+                632, 328, 372, 578, 378, 710, 246);
 
     }
 
