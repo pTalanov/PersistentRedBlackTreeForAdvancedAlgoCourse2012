@@ -135,11 +135,17 @@ public final class LookUpPath<E extends Comparable<? super E>> {
         }
     };
 
-    public void insertDummy(@NotNull Direction direction) {
+    /*mutates the state*/
+    public void insertNode(@NotNull Direction direction, @NotNull Node<E> node) {
         turns.add(direction);
-        //noinspection unchecked
-        path.add(DUMMY_NODE);
+        path.add(node);
         length += 1;
+    }
+
+    /*mutates the state*/
+    public void insertDummy(@NotNull Direction direction) {
+        //noinspection unchecked
+        insertNode(direction, DUMMY_NODE);
     }
 
     @Nullable

@@ -10,11 +10,30 @@ public final class VerifyUtils {
 
     }
 
-    public static <E> boolean verifyProperties(@NotNull Node<E> root) {
+    public static <E extends Comparable<? super E>> boolean verifyProperties(@NotNull Node<E> root) {
+        verifyTreeProperties(root);
         verifyRootIsBlack(root);
         verifyChildrenOfRedNodesAreBlack(root);
         verifyEveryPathToLeafHasEqualNumberOfBlackNodes(root);
         return true;
+    }
+
+    private static <E extends Comparable<? super E>> void verifyTreeProperties(@NotNull Node<E> root) {
+        if (root.isNil()) {
+            return;
+        }
+        recVerifyTreeProperty(root);
+    }
+
+    private static <E extends Comparable<? super E>> void recVerifyTreeProperty(@NotNull Node<E> node) {
+        if (!node.getLeft().isNil()) {
+            assert node.getLeft().getValue().compareTo(node.getValue()) < 0;
+            recVerifyTreeProperty(node.getLeft());
+        }
+        if (!node.getRight().isNil()) {
+            assert node.getRight().getValue().compareTo(node.getValue()) > 0;
+            recVerifyTreeProperty(node.getRight());
+        }
     }
 
     private static <E> void verifyChildrenOfRedNodesAreBlack(Node<E> node) {

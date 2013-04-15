@@ -285,6 +285,8 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
                         .build();
                 Node<E> siblingAfterRotation = rotate(repaintedFather, directionToRotate, mutator);
                 Node<E> fatherAfterRotation = siblingAfterRotation.getChild(directionToRotate);
+                path.popLast(1);
+                path.insertNode(directionToRotate, siblingAfterRotation);
                 path.insertDummy(directionToRotate);
                 return deleteCase3(fatherAfterRotation);
             } else {
