@@ -10,10 +10,11 @@ public final class VerifyUtils {
 
     }
 
-    public static <E> void verifyProperties(@NotNull Node<E> root) {
+    public static <E> boolean verifyProperties(@NotNull Node<E> root) {
         verifyRootIsBlack(root);
         verifyChildrenOfRedNodesAreBlack(root);
         verifyEveryPathToLeafHasEqualNumberOfBlackNodes(root);
+        return true;
     }
 
     private static <E> void verifyChildrenOfRedNodesAreBlack(Node<E> node) {

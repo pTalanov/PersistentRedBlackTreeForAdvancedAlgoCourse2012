@@ -55,7 +55,7 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
             return null;
         }
         PersistentRedBlackBST<E> result = insertCase1(lookUpPath, RBTreeNode.leafNode(elementToAdd, Color.RED));
-        VerifyUtils.verifyProperties(result.root);
+        assert VerifyUtils.verifyProperties(result.root);
         return result;
     }
 
@@ -173,7 +173,7 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
     public PersistentRedBlackBST<E> remove(@NotNull E element) {
         PersistentRedBlackBST<E> resultingTree = doRemove(element);
         if (resultingTree != null) {
-            VerifyUtils.verifyProperties(resultingTree.root);
+            assert VerifyUtils.verifyProperties(resultingTree.root);
         }
         return resultingTree;
     }
