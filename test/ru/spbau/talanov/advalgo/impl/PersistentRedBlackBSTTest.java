@@ -8,7 +8,6 @@ import java.util.*;
 /**
  * @author Pavel Talanov
  */
-//TODO: test for return null
 @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
 public class PersistentRedBlackBSTTest {
     @org.junit.Test
@@ -369,5 +368,16 @@ public class PersistentRedBlackBSTTest {
             Assert.assertEquals(expected.lower(randomInt), tree.lower(randomInt));
             Assert.assertEquals(expected.higher(randomInt), tree.higher(randomInt));
         }
+    }
+
+    @Test
+    public void testReturningNullForInvalidOperations() throws Exception {
+        PersistentRedBlackBST<Integer> set = PersistentRedBlackBST.of(1, 2, 3);
+        Assert.assertNull(set.remove(4));
+        Assert.assertNull(set.remove(0));
+        Assert.assertNull(set.remove(100));
+        Assert.assertNull(set.add(1));
+        Assert.assertNull(set.add(2));
+        Assert.assertNull(set.add(3));
     }
 }
