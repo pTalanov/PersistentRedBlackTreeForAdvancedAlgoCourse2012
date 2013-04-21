@@ -473,4 +473,8 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
         recTraverse(callback, node.getRight());
     }
 
+    @Override
+    public String toString() {
+        return toList().toString();
+    }
 }
