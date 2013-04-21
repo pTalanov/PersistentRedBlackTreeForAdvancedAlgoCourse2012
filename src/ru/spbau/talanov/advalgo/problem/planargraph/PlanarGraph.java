@@ -7,6 +7,8 @@ import java.util.*;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         Represents a generic planar graph.
  */
 public abstract class PlanarGraph {
 

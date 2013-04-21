@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author Pavel Talanov
  */
-public class Algorithm {
+public final class Algorithm {
     @NotNull
     private final PlanarGraph graph;
     @NotNull

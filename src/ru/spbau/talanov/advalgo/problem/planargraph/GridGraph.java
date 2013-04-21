@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         Represents a uniform grid graph. Each face is a square.
  */
 public final class GridGraph extends PlanarGraph {
 

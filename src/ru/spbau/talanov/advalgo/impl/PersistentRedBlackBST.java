@@ -11,6 +11,10 @@ import static ru.spbau.talanov.advalgo.impl.Direction.RIGHT;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         An implementation of PersistentNavigableSet interface using classical red black trees and "path copying" technique.
+ *         Mostly based on http://en.wikipedia.org/wiki/Red%E2%80%93black_tree and
+ *         http://en.literateprograms.org/Red-black_tree_%28Java%29?oldid=16622
  */
 @SuppressWarnings("RedundantTypeArguments")
 public final class PersistentRedBlackBST<E extends Comparable<? super E>> implements PersistentNavigableSet<E, PersistentRedBlackBST<E>> {

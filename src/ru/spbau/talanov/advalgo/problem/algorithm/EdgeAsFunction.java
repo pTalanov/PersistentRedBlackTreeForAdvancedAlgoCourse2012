@@ -6,6 +6,9 @@ import ru.spbau.talanov.advalgo.problem.planargraph.Vertex;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         This class allows viewing edge of a graph as function which can have different values at different xs.
+ *         X is supplied via XProvider class.
  */
 public final class EdgeAsFunction implements Comparable<EdgeAsFunction> {
 

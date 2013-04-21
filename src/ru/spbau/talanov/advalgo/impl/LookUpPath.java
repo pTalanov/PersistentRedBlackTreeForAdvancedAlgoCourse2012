@@ -8,6 +8,9 @@ import java.util.List;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         A mutable entity representing a look up path from one node of the tree (the root) to the other.
+ *         It is mostly used to remember the topography of graph during mutation operations on the tree.
  */
 public final class LookUpPath<E extends Comparable<? super E>> {
 

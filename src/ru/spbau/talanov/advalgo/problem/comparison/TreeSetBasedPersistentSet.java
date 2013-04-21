@@ -8,6 +8,8 @@ import java.util.TreeSet;
 
 /**
  * @author Pavel Talanov
+ *         <p/>
+ *         A very basic implementation of PersistentNavigableSet based on just copying the whole structure every time it is queried.
  */
 public final class TreeSetBasedPersistentSet<E extends Comparable<? super E>> implements PersistentNavigableSet<E, TreeSetBasedPersistentSet<E>> {
 
