@@ -9,6 +9,7 @@ import java.util.*;
  * @author Pavel Talanov
  */
 //TODO: test for return null
+@SuppressWarnings({"unchecked", "RedundantTypeArguments"})
 public class PersistentRedBlackBSTTest {
     @org.junit.Test
     public void testEmpty() throws Exception {
@@ -84,6 +85,7 @@ public class PersistentRedBlackBSTTest {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testInsertCase4() throws Exception {
         PersistentRedBlackBST<Integer> insertRight = PersistentRedBlackBST.<Integer>empty().add(0).add(2).add(1);
@@ -97,6 +99,7 @@ public class PersistentRedBlackBSTTest {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testToListToSet() throws Exception {
         PersistentRedBlackBST<Integer> someBST = PersistentRedBlackBST.<Integer>empty().add(0).add(2).add(1);
@@ -116,9 +119,11 @@ public class PersistentRedBlackBSTTest {
         List<Integer> expected = new ArrayList<Integer>();
         PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty();
         for (int i = 0; i < numberOfInsertions; ++i) {
+            assert tree != null;
             tree = tree.add(i);
             expected.add(i);
         }
+        assert tree != null;
         Assert.assertEquals(expected, tree.toList());
     }
 
@@ -146,7 +151,7 @@ public class PersistentRedBlackBSTTest {
 
     @Test
     public void testDeleteSimpleCases() throws Exception {
-        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(1).add(2);
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.of(1, 2);
         PersistentRedBlackBST<Integer> onlyOne = tree.remove(2);
         Assert.assertNotNull(onlyOne);
         Assert.assertTrue(onlyOne.contains(1));
@@ -161,7 +166,7 @@ public class PersistentRedBlackBSTTest {
 
     @org.junit.Test
     public void testDeleteCase1() throws Exception {
-        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(1);
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.of(1);
         PersistentRedBlackBST<Integer> shouldBeEmpty = tree.remove(1);
         Assert.assertNotNull(shouldBeEmpty);
         Assert.assertFalse(shouldBeEmpty.contains(1));
@@ -308,7 +313,7 @@ public class PersistentRedBlackBSTTest {
 
     @org.junit.Test
     public void testHigher() throws Exception {
-        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.of(0, 10, 20, 22, 23, 2);
         Assert.assertEquals((Object) 0, tree.higher(-1000));
         Assert.assertEquals((Object) 0, tree.higher(-1));
         Assert.assertEquals((Object) 2, tree.higher(0));
@@ -326,7 +331,7 @@ public class PersistentRedBlackBSTTest {
 
     @org.junit.Test
     public void testLower() throws Exception {
-        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.<Integer>empty().add(0).add(10).add(20).add(22).add(23).add(2);
+        PersistentRedBlackBST<Integer> tree = PersistentRedBlackBST.of(0, 10, 20, 22, 23, 2);
         Assert.assertEquals(null, tree.lower(-1000));
         Assert.assertEquals(null, tree.lower(-1));
         Assert.assertEquals(null, tree.lower(0));

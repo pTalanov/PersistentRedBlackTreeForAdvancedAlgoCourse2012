@@ -12,6 +12,7 @@ import static ru.spbau.talanov.advalgo.impl.Direction.RIGHT;
 /**
  * @author Pavel Talanov
  */
+@SuppressWarnings("RedundantTypeArguments")
 public final class PersistentRedBlackBST<E extends Comparable<? super E>> implements PersistentNavigableSet<E, PersistentRedBlackBST<E>> {
 
     @NotNull
@@ -162,6 +163,7 @@ public final class PersistentRedBlackBST<E extends Comparable<? super E>> implem
         Node<E> rotatedNode = RBTreeNode.builder(node, mutator)
                 .child(direction.opposite(), childInOppositeDirection.getChild(direction))
                 .build();
+        @SuppressWarnings("UnnecessaryLocalVariable")
         Node<E> replacementNode = RBTreeNode.builder(childInOppositeDirection, mutator)
                 .child(direction, rotatedNode)
                 .build();
